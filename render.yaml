@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: rcj-optical-server        # change to whatever name you prefer
+    env: node
+    plan: free
+    branch: main                    # change to your branch if not `main`
+    buildCommand: npm install
+    startCommand: >
+      sh -lc 'if [ -n "$SERVICE_ACCOUNT_JSON" ]; then
+               printf "%s" "$SERVICE_ACCOUNT_JSON" > ./serviceAccountKey.json;
+             fi &&
+             node server.js'
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "5000"
+    secrets:
+      - key: SERVICE_ACCOUNT_JSON
+        name: firebase_service_account_json_secret
+      - key: JWT_SECRET
+        name: rcj_jwt_secret
+      - key: EMAIL_USER
+        name: rcj_email_user
+      - key: EMAIL_PASS
+        name: rcj_email_pass
